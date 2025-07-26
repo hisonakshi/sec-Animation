@@ -21,12 +21,40 @@ body {
   font-weight: 900;
   font-size: clamp(2.5rem, 8vw, 6rem); /* responsive font size */
   color: #333;
-  transform: translateY(100vh); /* Start from below */
+  transform: translateY(100vh);
   transition: transform 1.5s ease-in-out;
   position: relative;
   text-align: center;
 }
 
 .heading.show {
-  transform: translateY(0); /* Slide into place */
+  transform: translateY(0);
+}
+
+/* 📱 Small Phones */
+@media (max-width: 480px) {
+  .heading {
+    font-size: clamp(2rem, 9vw, 4rem);
+  }
+  .container {
+    padding-top: 20vh;
+    gap: 1.5vh;
+  }
+}
+
+/* 📱 Tablets and small laptops */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .heading {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+  }
+  .container {
+    padding-top: 25vh;
+  }
+}
+
+/* 💻 Large desktops */
+@media (min-width: 1440px) {
+  .heading {
+    font-size: clamp(4rem, 6vw, 7rem);
+  }
 }
