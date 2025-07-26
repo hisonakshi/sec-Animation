@@ -2,55 +2,63 @@ const headings = document.querySelectorAll('.heading');
 let currentStep = 0;
 let isScrolling = false;
 
-// Show and hide heading
+// Show one heading
 function showHeading(step) {
-  if (headings[step]) headings[step].classList.add('show');
-}
-function hideHeading(step) {
-  if (headings[step]) headings[step].classList.remove('show');
+  if (headings[step]) {
+    headings[step].classList.add('show');
+  }
 }
 
-// Mouse wheel support (desktop/laptop)
-window.addEventListener('wheel', (e) => {
+// Hide one heading
+function hideHeading(step) {
+  if (headings[step]) {
+    headings[step].classList.remove('show');
+  }
+}
+
+// Debounce scrolling
+function debounceScroll(callback) {
   if (isScrolling) return;
   isScrolling = true;
+  callback();
+  setTimeout(() => {
+    isScrolling = false;
+  }, 1500); // matches CSS transition duration
+}
 
-  if (e.deltaY > 0 && currentStep < headings.length) {
-    showHeading(currentStep);
-    currentStep++;
-  } else if (e.deltaY < 0 && currentStep > 0) {
-    currentStep--;
-    hideHeading(currentStep);
-  }
-
-  setTimeout(() => (isScrolling = false), 1500);
+// Mouse/Trackpad scroll
+window.addEventListener('wheel', (e) => {
+  debounceScroll(() => {
+    if (e.deltaY > 0 && currentStep < headings.length) {
+      showHeading(currentStep);
+      currentStep++;
+    } else if (e.deltaY < 0 && currentStep > 0) {
+      currentStep--;
+      hideHeading(currentStep);
+    }
+  });
 });
 
-// Touch support (mobile/tablet)
-let startY = 0;
+// Touch scroll (swipe up/down)
+let touchStartY = 0;
 
 window.addEventListener('touchstart', (e) => {
-  startY = e.touches[0].clientY;
+  touchStartY = e.touches[0].clientY;
 });
 
 window.addEventListener('touchend', (e) => {
-  if (isScrolling) return;
-  const endY = e.changedTouches[0].clientY;
-  const deltaY = startY - endY;
+  const touchEndY = e.changedTouches[0].clientY;
+  const deltaY = touchStartY - touchEndY;
 
-  if (Math.abs(deltaY) < 30) return; // ignore small swipes
+  if (Math.abs(deltaY) < 30) return; // ignore very small swipes
 
-  isScrolling = true;
-
-  if (deltaY > 0 && currentStep < headings.length) {
-    // swipe up
-    showHeading(currentStep);
-    currentStep++;
-  } else if (deltaY < 0 && currentStep > 0) {
-    // swipe down
-    currentStep--;
-    hideHeading(currentStep);
-  }
-
-  setTimeout(() => (isScrolling = false), 1500);
+  debounceScroll(() => {
+    if (deltaY > 0 && currentStep < headings.length) {
+      showHeading(currentStep); // swipe up
+      currentStep++;
+    } else if (deltaY < 0 && currentStep > 0) {
+      currentStep--;
+      hideHeading(currentStep); // swipe down
+    }
+  });
 });
